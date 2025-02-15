@@ -1,0 +1,134 @@
+import tkinter as tk
+from tkinter import messagebox
+
+class ATM_GUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("ATM Machine")
+        self.root.geometry("400x400")
+        self.root.configure(bg="lightblue")
+
+        self.pin = ""
+        self.balance = 0
+
+        self.create_main_menu()
+
+    def create_main_menu(self):
+        """Main menu with ATM options."""
+        self.clear_window()
+        tk.Label(self.root, text="Welcome to ATM", font=("Arial", 18, "bold"), bg="lightblue").pack(pady=10)
+
+        tk.Button(self.root, text="Create PIN", command=self.pin_create, font=("Arial", 12), width=20).pack(pady=5)
+        tk.Button(self.root, text="Check Balance", command=self.check_balance, font=("Arial", 12), width=20).pack(pady=5)
+        tk.Button(self.root, text="Change PIN", command=self.pin_change, font=("Arial", 12), width=20).pack(pady=5)
+        tk.Button(self.root, text="Withdraw Amount", command=self.amount_withdrawal, font=("Arial", 12), width=20).pack(pady=5)
+        tk.Button(self.root, text="Exit", command=self.root.quit, font=("Arial", 12), width=20, bg="red", fg="white").pack(pady=5)
+
+    def clear_window(self):
+        """Clear the window before switching screens."""
+        for widget in self.root.winfo_children():
+            widget.destroy()
+
+    def pin_create(self):
+        """Screen for PIN creation."""
+        self.clear_window()
+        tk.Label(self.root, text="Create PIN", font=("Arial", 14, "bold"), bg="lightblue").pack(pady=10)
+
+        tk.Label(self.root, text="Enter 4-digit PIN:", font=("Arial", 12)).pack()
+        pin_entry = tk.Entry(self.root, show="*", font=("Arial", 12))
+        pin_entry.pack()
+
+        tk.Label(self.root, text="Enter Balance:", font=("Arial", 12)).pack()
+        balance_entry = tk.Entry(self.root, font=("Arial", 12))
+        balance_entry.pack()
+
+        def save_pin():
+            pin = pin_entry.get()
+            balance = balance_entry.get()
+            if len(pin) == 4 and pin.isdigit():
+                self.pin = pin
+                self.balance = int(balance)
+                messagebox.showinfo("Success", "PIN Created Successfully!")
+                self.create_main_menu()
+            else:
+                messagebox.showerror("Error", "Invalid PIN! PIN must be 4 digits.")
+
+        tk.Button(self.root, text="Submit", command=save_pin, font=("Arial", 12), bg="green", fg="white").pack(pady=10)
+
+    def check_balance(self):
+        """Screen to check balance after PIN verification."""
+        self.clear_window()
+        tk.Label(self.root, text="Check Balance", font=("Arial", 14, "bold"), bg="lightblue").pack(pady=10)
+
+        tk.Label(self.root, text="Enter PIN:", font=("Arial", 12)).pack()
+        pin_entry = tk.Entry(self.root, show="*", font=("Arial", 12))
+        pin_entry.pack()
+
+        def verify_pin():
+            if pin_entry.get() == self.pin:
+                messagebox.showinfo("Balance", f"Your Current Balance: ₹{self.balance}")
+                self.create_main_menu()
+            else:
+                messagebox.showerror("Error", "Incorrect PIN!")
+
+        tk.Button(self.root, text="Submit", command=verify_pin, font=("Arial", 12), bg="green", fg="white").pack(pady=10)
+
+    def pin_change(self):
+        """Screen to change PIN."""
+        self.clear_window()
+        tk.Label(self.root, text="Change PIN", font=("Arial", 14, "bold"), bg="lightblue").pack(pady=10)
+
+        tk.Label(self.root, text="Enter Old PIN:", font=("Arial", 12)).pack()
+        old_pin_entry = tk.Entry(self.root, show="*", font=("Arial", 12))
+        old_pin_entry.pack()
+
+        tk.Label(self.root, text="Enter New 4-digit PIN:", font=("Arial", 12)).pack()
+        new_pin_entry = tk.Entry(self.root, show="*", font=("Arial", 12))
+        new_pin_entry.pack()
+
+        def change_pin():
+            if old_pin_entry.get() == self.pin:
+                new_pin = new_pin_entry.get()
+                if len(new_pin) == 4 and new_pin.isdigit():
+                    self.pin = new_pin
+                    messagebox.showinfo("Success", "PIN Changed Successfully!")
+                    self.create_main_menu()
+                else:
+                    messagebox.showerror("Error", "Invalid PIN! PIN must be 4 digits.")
+            else:
+                messagebox.showerror("Error", "Incorrect Old PIN!")
+
+        tk.Button(self.root, text="Submit", command=change_pin, font=("Arial", 12), bg="green", fg="white").pack(pady=10)
+
+    def amount_withdrawal(self):
+        """Screen to withdraw money after PIN verification."""
+        self.clear_window()
+        tk.Label(self.root, text="Withdraw Amount", font=("Arial", 14, "bold"), bg="lightblue").pack(pady=10)
+
+        tk.Label(self.root, text="Enter PIN:", font=("Arial", 12)).pack()
+        pin_entry = tk.Entry(self.root, show="*", font=("Arial", 12))
+        pin_entry.pack()
+
+        tk.Label(self.root, text="Enter Amount:", font=("Arial", 12)).pack()
+        amount_entry = tk.Entry(self.root, font=("Arial", 12))
+        amount_entry.pack()
+
+        def withdraw():
+            if pin_entry.get() == self.pin:
+                amount = int(amount_entry.get())
+                if 0 < amount <= self.balance:
+                    self.balance -= amount
+                    messagebox.showinfo("Success", f"Withdrawal Successful! Remaining Balance: ₹{self.balance}")
+                    self.create_main_menu()
+                else:
+                    messagebox.showerror("Error", "Insufficient Balance!")
+            else:
+                messagebox.showerror("Error", "Incorrect PIN!")
+
+        tk.Button(self.root, text="Submit", command=withdraw, font=("Arial", 12), bg="green", fg="white").pack(pady=10)
+
+# Running the ATM application
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = ATM_GUI(root)
+    root.mainloop()
